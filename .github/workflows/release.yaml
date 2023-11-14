@@ -38,7 +38,7 @@ jobs:
           tag_name: v${{ inputs.tag }}
 
   push-to-registry:
-    # This action doesn't depend on anything, it's easy to re-tag if something failed
+    # This action doesn't need to wait on any other task, it's easy to re-tag if something failed
     name: "Push Docker image to Docker Hub"
     runs-on: "ubuntu-latest"
     environment:
@@ -49,8 +49,8 @@ jobs:
           ref: ${{ inputs.sha }}
 
       - name: "Get tag"
-        id: "get-tag"
-        shell: "bash"
+        id: get-tag
+        shell: bash
         run: |
           echo PKG_VERSION=$(cargo metadata --format-version 1 | jq -r '.packages[] | select(.name=="ruff_cli") | .version') >> $GITHUB_OUTPUT
 
@@ -63,15 +63,18 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: "Extract metadata (tags, labels) for Docker"
-        id: "meta"
-        uses: "docker/metadata-action@v4"
+        id: meta
+        uses: docker/metadata-action@v4
         with:
           images: ghcr.io/konstin/release-testing2
 
       - name: "Build and push Docker image"
-        uses: "docker/build-push-action@v3"
+        uses: docker/build-push-action@v3
         with:
           context: .
+          # Reuse the builder
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           push: ${{ inputs.tag != '' }}
           tags: ghcr.io/konstin/release-testing2:latest,ghcr.io/konstin/release-testing2:${{ steps.get-tag.outputs.PKG_VERSION }}
           labels: ${{ steps.meta.outputs.labels }}
