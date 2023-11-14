@@ -86,5 +86,5 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           push: ${{ inputs.tag }}
-          tags: ghcr.io/konstin/release-testing2:latest,ghcr.io/konstin/release-testing2:${{ inputs.tag || "dry-run" }}
+          tags: ghcr.io/konstin/release-testing2:latest,ghcr.io/konstin/release-testing2:${{ inputs.tag || 'dry-run' }}
           labels: ${{ steps.meta.outputs.labels }}
