@@ -40,6 +40,9 @@ jobs:
     runs-on: "ubuntu-latest"
     environment:
       name: release
+    permissions:
+      # For the docker push
+      packages: write
     steps:
       - uses: actions/checkout@v4
         with:
