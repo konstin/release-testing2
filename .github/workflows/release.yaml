@@ -27,10 +27,6 @@ jobs:
       # For GitHub release publishing
       contents: write
     steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: binaries
-          path: binaries
       - name: "Publish to GitHub"
         uses: softprops/action-gh-release@v1
         with:
